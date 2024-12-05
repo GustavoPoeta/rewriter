@@ -7,6 +7,7 @@ import (
 	"os"
 )
 
+// Receive the file's name and open it
 func openFile(fileName string) (*os.File, error) {
 	file, err := os.OpenFile(fileName, os.O_RDWR, 0644)
 
@@ -17,6 +18,7 @@ func openFile(fileName string) (*os.File, error) {
 	return file, nil
 }
 
+// Receives a file and reads and writes its content of the file line by line in an array (slice)
 func readToSlc(file *os.File) ([]string, error) {
 	scanner := bufio.NewScanner(file)
 
@@ -35,8 +37,11 @@ func readToSlc(file *os.File) ([]string, error) {
 	return fileContent, nil
 }
 
+// Receives a map where key is the index in the slice that needs to be modified and the value is the new line
 func modifyFileArr(fileArr []string, newLinesMap map[int]string) []string {
 
+	// loops newLinesMap and if the index is valid:
+	//it modifies the content of the specified line with its corresponding value
 	for i, newLine := range newLinesMap {
 		if i >= 0 && i < len(fileArr) {
 			fileArr[i] = newLine
