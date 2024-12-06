@@ -6,8 +6,8 @@ import (
 	"os"
 )
 
-// Receive the file's name and open it
-func openFile(fileName string) (*os.File, error) {
+// OpenFile Receive the file's name and open it
+func OpenFile(fileName string) (*os.File, error) {
 	file, err := os.OpenFile(fileName, os.O_RDWR, 0644)
 
 	if os.IsNotExist(err) {
@@ -19,8 +19,8 @@ func openFile(fileName string) (*os.File, error) {
 	return file, nil
 }
 
-// Receives a file and reads and writes its content of the file line by line in an array (slice)
-func readToSlc(file *os.File) ([]string, error) {
+// ReadToSlc Receives a file and reads and writes its content of the file line by line in an array (slice)
+func ReadToSlc(file *os.File) ([]string, error) {
 	scanner := bufio.NewScanner(file)
 
 	_, err := file.Seek(0, 0)
@@ -43,8 +43,8 @@ func readToSlc(file *os.File) ([]string, error) {
 	return fileContent, nil
 }
 
-// Receives a map where key is the index in the slice that needs to be modified and the value is the new line
-func modifyFileArr(fileArr []string, newLinesMap map[int]string) []string {
+// ModifyFileArr Receives a map where key is the index in the slice that needs to be modified and the value is the new line
+func ModifyFileArr(fileArr []string, newLinesMap map[int]string) []string {
 
 	// loops newLinesMap and if the index is valid:
 	//it modifies the content of the specified line with its corresponding value
@@ -57,8 +57,8 @@ func modifyFileArr(fileArr []string, newLinesMap map[int]string) []string {
 	return fileArr
 }
 
-// Removes the file content and rewrites it with the changes given
-func writeFile(newContent []string, file *os.File) (*os.File, error) {
+// WriteFile Removes the file content and rewrites it with the changes given
+func WriteFile(newContent []string, file *os.File) (*os.File, error) {
 
 	// remove file content
 	err := file.Truncate(0)
