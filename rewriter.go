@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"log"
 	"os"
 )
@@ -11,8 +10,10 @@ import (
 func openFile(fileName string) (*os.File, error) {
 	file, err := os.OpenFile(fileName, os.O_RDWR, 0644)
 
-	if err != nil {
-		panic(err)
+	if os.IsNotExist(err) {
+		file, err = os.Create(fileName)
+	} else if err != nil {
+		return nil, err
 	}
 
 	return file, nil
@@ -22,16 +23,21 @@ func openFile(fileName string) (*os.File, error) {
 func readToSlc(file *os.File) ([]string, error) {
 	scanner := bufio.NewScanner(file)
 
+	_, err := file.Seek(0, 0)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	var fileContent []string
 
 	fileContent = make([]string, 0)
 
-	for scanner.Scan() {
-		fileContent = append(fileContent, scanner.Text())
+	for scanner.Scan() { // while there are tokens to scan
+		fileContent = append(fileContent, scanner.Text()) // append it to the fileContent array
 	}
 
 	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	return fileContent, nil
@@ -51,30 +57,38 @@ func modifyFileArr(fileArr []string, newLinesMap map[int]string) []string {
 	return fileArr
 }
 
-func main() {
-	file, err := openFile("dummy.txt")
+// Removes the file content and rewrites it with the changes given
+func writeFile(newContent []string, file *os.File) (*os.File, error) {
 
-	defer func() {
-		if err := file.Close(); err != nil {
-			panic(err)
+	// remove file content
+	err := file.Truncate(0)
+
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = file.Seek(0, 0)
+
+	if err != nil {
+		return nil, err
+	}
+
+	writer := bufio.NewWriter(file)
+
+	// for each line in newContent, write it and go to the next line
+	for _, line := range newContent {
+		_, err := writer.WriteString(line + "\n")
+
+		if err != nil {
+			return nil, err
 		}
-	}()
-
-	if err != nil {
-		log.Fatal(err)
 	}
 
-	fileContent, err := readToSlc(file)
-
+	// makes the changes
+	err = writer.Flush()
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	newLinesMap := make(map[int]string)
-
-	newLinesMap[1] = "não e você"
-
-	modifiedArr := modifyFileArr(fileContent, newLinesMap)
-
-	fmt.Println(modifiedArr)
+	return file, nil
 }
