@@ -6,7 +6,9 @@ import (
 	"os"
 )
 
-// OpenFile Receive the file's name and open it
+// OpenFile opens a file with the given name in read-write mode.
+// If the file does not exist, it will be created.
+// Returns the opened file and an error, which is nil on success.
 func OpenFile(fileName string) (*os.File, error) {
 	file, err := os.OpenFile(fileName, os.O_RDWR, 0644)
 
@@ -19,7 +21,9 @@ func OpenFile(fileName string) (*os.File, error) {
 	return file, nil
 }
 
-// ReadToSlc Receives a file and reads and writes its content of the file line by line in an array (slice)
+// ReadToSlc receives a file, and creates a slice that will contain the content
+// of the file, line by line. Then it starts reading and appending the lines inside the slice.
+// It will return the slice and an error that, if successful, will be nil.
 func ReadToSlc(file *os.File) ([]string, error) {
 	scanner := bufio.NewScanner(file)
 
@@ -43,8 +47,11 @@ func ReadToSlc(file *os.File) ([]string, error) {
 	return fileContent, nil
 }
 
-// ModifyFileArr Receives a map where key is the index in the slice that needs to be modified and the value is the new line
-func ModifyFileArr(fileArr []string, newLinesMap map[int]string) []string {
+// ModifyFileArr receives an array containing the lines the file to modify,
+// and a map with the new ones. It will loop the map and if the index is valid
+// it replaces the original line with the new. It returns the same file's array,
+// but modified, and an error that, if successful, is nil.
+func ModifyFileArr(fileArr []string, newLinesMap map[int]string) ([]string, error) {
 
 	// loops newLinesMap and if the index is valid:
 	//it modifies the content of the specified line with its corresponding value
@@ -54,21 +61,23 @@ func ModifyFileArr(fileArr []string, newLinesMap map[int]string) []string {
 		}
 	}
 
-	return fileArr
+	return fileArr, nil
 }
 
 // WriteFile Removes the file content and rewrites it with the changes given
+// WriteFile overwrites the content of the given file with the provided lines.
+// The file's existing content is truncated, and the new lines from newContent
+// are written to it, each followed by a newline character.
+// Changes are flushed to disk before the function returns.
+// Returns the file and an error, which is nil on success.
 func WriteFile(newContent []string, file *os.File) (*os.File, error) {
-
 	// remove file content
 	err := file.Truncate(0)
-
 	if err != nil {
 		return nil, err
 	}
 
 	_, err = file.Seek(0, 0)
-
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +87,6 @@ func WriteFile(newContent []string, file *os.File) (*os.File, error) {
 	// for each line in newContent, write it and go to the next line
 	for _, line := range newContent {
 		_, err := writer.WriteString(line + "\n")
-
 		if err != nil {
 			return nil, err
 		}
