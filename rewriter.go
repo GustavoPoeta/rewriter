@@ -25,9 +25,16 @@ func OpenFile(fileName string) (*os.File, error) {
 // of the file, line by line. Then it starts reading and appending the lines inside the slice.
 // It will return the slice and an error that, if successful, will be nil.
 func ReadToSlc(file *os.File) ([]string, error) {
+
+	fileInfo, err := os.Stat(file.Name())
+
+	if os.IsNotExist(err) || fileInfo.Size() <= 0 {
+		return []string{}, err
+	}
+
 	scanner := bufio.NewScanner(file)
 
-	_, err := file.Seek(0, 0)
+	_, err = file.Seek(0, 0)
 	if err != nil {
 		log.Fatal(err)
 	}
