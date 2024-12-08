@@ -2,6 +2,7 @@ package rewriter
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"os"
 )
@@ -60,11 +61,17 @@ func ReadToSlc(file *os.File) ([]string, error) {
 // but modified, and an error that, if successful, is nil.
 func ModifyFileArr(fileArr []string, newLinesMap map[int]string) ([]string, error) {
 
+	if len(newLinesMap) <= 0 {
+		return []string{}, fmt.Errorf("modification failed: the lenght of the given map is 0 or negative")
+	}
+
 	// loops newLinesMap and if the index is valid:
 	//it modifies the content of the specified line with its corresponding value
 	for i, newLine := range newLinesMap {
 		if i >= 0 && i < len(fileArr) {
 			fileArr[i] = newLine
+		} else if i >= len(fileArr) {
+			fileArr = append(fileArr, newLine)
 		}
 	}
 
