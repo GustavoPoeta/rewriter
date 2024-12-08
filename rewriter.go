@@ -85,8 +85,19 @@ func ModifyFileArr(fileArr []string, newLinesMap map[int]string) ([]string, erro
 // Changes are flushed to disk before the function returns.
 // Returns the file and an error, which is nil on success.
 func WriteFile(newContent []string, file *os.File) (*os.File, error) {
+
+	fileInfo, err := os.Stat(file.Name())
+
+	if os.IsNotExist(err) || fileInfo.Size() <= 0 {
+		return nil, err
+	}
+
+	if len(newContent) <= 0 {
+		return file, fmt.Errorf("file was not modificated as there aren't changes to be made")
+	}
+
 	// remove file content
-	err := file.Truncate(0)
+	err = file.Truncate(0)
 	if err != nil {
 		return nil, err
 	}
