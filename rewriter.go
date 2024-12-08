@@ -55,7 +55,7 @@ func ReadToSlc(file *os.File) ([]string, error) {
 }
 
 // ModifyFileArr receives an array containing the lines the file to modify,
-// and a map with the new ones. It will loop the map and if the index is valid
+// and a map with the new ones where [index of the line to modify]new line. It will loop the map and if the index is valid
 // it replaces the original line with the new. It returns the same file's array,
 // but modified, and an error that, if successful, is nil.
 func ModifyFileArr(fileArr []string, newLinesMap map[int]string) ([]string, error) {
