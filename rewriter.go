@@ -7,10 +7,10 @@ import (
 	"os"
 )
 
-// OpenFile opens a file with the given name in read-write mode.
+// OpenFile opens a file with the given path in read-write mode.
 // If the file does not exist, it will be created.
 // Returns the opened file and an error, which is nil on success.
-func OpenFile(fileName string) (*os.File, error) {
+func OpenFile(filePath string) (*os.File, error) {
 	file, err := os.OpenFile(fileName, os.O_RDWR, 0644)
 
 	if os.IsNotExist(err) {
